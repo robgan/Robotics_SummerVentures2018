@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 from random import random 
 from math import atan2, cos, sin, sqrt, pi
@@ -10,13 +11,14 @@ sys.path.append('/'.join(cwd.split('/')[0:-1]))
 from SummerVentures import SimpleVehicle, ang_diff
 
 def pure_pursuit(x_start, y_start, theta_start):
-	Kv = 3
+        Kv = 3
 	Kh = 6
 	Ki = 0.00001
 	d = 1
 	dt = 0.1
 	A = 5
-
+        dx = .1
+        
 	vehicle = SimpleVehicle(x_start, y_start, theta_start, 1.0)
 	
 	x = x_start
@@ -24,7 +26,7 @@ def pure_pursuit(x_start, y_start, theta_start):
 	theta = theta_start
 
 	x_goal = -10
-	y_goal = A*sin(x_goal)
+	y_goal = 3*sin(x_goal)
 
 	x_diff = x_goal-x
 	y_diff = y_goal-y
@@ -32,11 +34,40 @@ def pure_pursuit(x_start, y_start, theta_start):
 	error = sqrt(x_diff**2 + y_diff**2)-d
 	totalError = 0
 	T = 0
+	Kv = 3
+	Kh = 6
+	Ki = 0.00001
+	d = 1
+	dt = 0.1
+	A = 5
+
+        x_goal = -10
+        y_goal = A * sin(x_goal)
+
+        x_diff = x_goal-x
+        y_diff = y_goal-y
 
 	while True:
 		#############YOUR CODE GOES HERE#############
-		
-		
+                x_goal = x_goal  + dx  
+                y_goal = A * sin(x_goal)
+                V = Kv * error + Ki *totalError * T
+                x_diff = x_goal-x
+                y_diff = y_goal-y
+                thetagoal = atan2( y_diff, x_diff)
+	        distance = sqrt(x_diff**2 + y_diff**2)	
+                vx = V *  cos (theta)
+                vy = V * sin(theta)
+                x = x + vx * dt
+                y = y + vy * dt
+                theta = theta + Kh * ang_diff(thetagoal, theta) * dt
+                vehicle.update_pose(x,y,theta) 
+                vehicle.plot(xlims=[-10,10],ylims=[-10,10])
+
+
+                error = sqrt(x_diff**2 + y_diff**2) - d
+                totalError = totalError + error
+                T = T + dt
 		#############################################
 
 if __name__ == '__main__':
